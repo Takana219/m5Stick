@@ -1,7 +1,3 @@
-///てすとだよ
-
-
-
 #include <M5StickC.h>
 
 #include "BluetoothSerial.h" //Bluetooth用

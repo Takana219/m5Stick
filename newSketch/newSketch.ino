@@ -23,6 +23,8 @@ int lightSensor(int analogRead_value)
         M5.Lcd.setCursor(10, 10);
         M5.Lcd.printf("%d\n", analogRead_value);
         return 1;
+
+        
     }
 }
 

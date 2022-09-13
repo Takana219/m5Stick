@@ -62,6 +62,7 @@ void task(void *pvParameters)
         // タイマー割り込みがあるまで待機する
         xQueueReceive(xQueue, &data, portMAX_DELAY);
         M5.IMU.getAhrsData(&pitch, &roll, &yaw);
+        M5.IMU.getAccelData(&accX, &accY, &accZ);  //加速度取得
 
         //================================================================================================
         // 最初の200個は読み捨てる #1000
@@ -87,7 +88,6 @@ void task(void *pvParameters)
             float gyroY = 0.0F;
             float gyroZ = 0.0F;
             M5.IMU.getGyroData(&gyroX, &gyroY, &gyroZ);
-            M5.MPU6886.getAccelData(&accX, &accY, &accZ);  //加速度取得
             float gyro = abs(gyroX) + abs(gyroY) + abs(gyroZ);
             if (20 < gyro)
             {

@@ -141,19 +141,21 @@ void task(void *pvParameters)
             //　出力部分
             //================================================================================================
 
+            M5.MPU6886.getAccelData(&accX, &accY, &accZ);  //加速度取得
 
             Serial.printf(" %f,%f,%f\n", pitch, roll, yaw2);
             M5.Lcd.printf("%.2f  %.2f  %.2f\n", pitch, roll, yaw2);
             //シリアル通信
-            SerialBT.printf("x%.2fy%.2fz%.2f", pitch, roll, yaw2);
-            SerialBT.printf("a%.2fb%.2fc%.2f", accX, accY, accZ);
-            Serial.flush();
+            SerialBT.printf("x%.2f,y%.2f,z%.2f", pitch, roll, yaw2);
+            SerialBT.printf(",a%.2f,b%.2f,c%.2f", accX, accY, accZ);
+            
+//            Serial.flush();
 
             //光センサー(数字が小さいと明るい, 数字が大きいと暗い)
             uint16_t analogRead_value = analogRead(33);
             int isLightCheck = lightSensor(analogRead_value);
             // シリアルモニタに”1"と文字列を送信
-            SerialBT.printf("l%d\n", isLightCheck);
+            SerialBT.printf(",l%d\n", isLightCheck);
             digitalWrite(10, isLightCheck); //LED をオンオフさせる。
 
             //グラフ化

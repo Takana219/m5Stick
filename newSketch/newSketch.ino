@@ -141,6 +141,7 @@ void task(void *pvParameters)
             //　出力部分
             //================================================================================================
 
+
             M5.MPU6886.getAccelData(&accX, &accY, &accZ);  //加速度取得
 
             Serial.printf(" %f,%f,%f\n", pitch, roll, yaw2);
@@ -148,8 +149,6 @@ void task(void *pvParameters)
             //シリアル通信
             SerialBT.printf("x%.2f,y%.2f,z%.2f", pitch, roll, yaw2);
             SerialBT.printf(",a%.2f,b%.2f,c%.2f", accX, accY, accZ);
-            
-//            Serial.flush();
 
             //光センサー(数字が小さいと明るい, 数字が大きいと暗い)
             uint16_t analogRead_value = analogRead(33);

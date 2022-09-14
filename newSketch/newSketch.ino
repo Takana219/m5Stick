@@ -46,6 +46,11 @@ void task(void *pvParameters)
     float yawOffset = 0;           // ヨーのオフセット
     float yawOld = 0;              // 前回のヨー
     float yaw2 = 0;                // 補正後のヨー
+
+    float before_pitch = 0.0f;
+    float before_roll = 0.0f;
+    float before_yaw = 0.0f;
+    
     while (1)
     {
         int8_t data;
@@ -85,7 +90,7 @@ void task(void *pvParameters)
             M5.IMU.getGyroData(&gyroX, &gyroY, &gyroZ);
             M5.MPU6886.getAccelData(&accX, &accY, &accZ);  //加速度取得
             float gyro = abs(gyroX) + abs(gyroY) + abs(gyroZ);
-            if (20 < gyro)
+            if (25 < gyro)
             {
                 // 振動があった場合には再度キャリブレーション
                 calibrationCount = 0;
@@ -157,11 +162,22 @@ void task(void *pvParameters)
 //            SerialBT.printf("l%d\n", isLightCheck);
 //            Serial.printf("l%d\n", isLightCheck);
 
-            Serial.printf("x%.2f,y%.2f,z%.2f,a%.2f,b%.2f,c%.2f,l%d\r\n", pitch, roll, yaw2, accX, accY, accZ, isLightCheck);
-            SerialBT.printf("x%.2f,y%.2f,z%.2f,a%.2f,b%.2f,c%.2f,l%d\r\n", pitch, roll, yaw2, accX, accY, accZ, isLightCheck);
+            float difference_pitch = pitch - before_pitch;
+            float difference_roll = roll - before_roll ;
+            float difference_yaw = yaw2 - before_yaw ;
+
+//            SerialBT.printf("x%.2f,y%.2f,z%.2f", difference_pitch, difference_roll, difference_yaw);
+
+            Serial.printf("x%.2f,y%.2f,z%.2f,a%.2f,b%.2f,c%.2f,l%d\r\n", difference_pitch, difference_roll, difference_yaw, accX, accY, accZ, isLightCheck);
+            SerialBT.printf("x%.2f,y%.2f,z%.2f,a%.2f,b%.2f,c%.2f,l%d\r\n", difference_pitch, difference_roll, difference_yaw, accX, accY, accZ, isLightCheck);
             //Serial.printf("x%.2f,y%.2f,z%.2f,a%.2f,b%.2f,c%.2f,l%d\n", pitch, roll, yaw2, accX, accY, accZ, isLightCheck);
             //SerialBT.printf("x%.2f,y%.2f,z%.2f,a%.2f,b%.2f,c%.2f,l%d\n", pitch, roll, yaw2, accX, accY, accZ, isLightCheck);
             digitalWrite(10, isLightCheck); //LED をオンオフさせる。
+
+
+            before_pitch = pitch;
+            before_roll = roll;
+            before_yaw = yaw2;
             
 
             //グラフ化
@@ -189,7 +205,7 @@ void setup()
     pinMode(10, OUTPUT);  // LED
 
     // Bluetooth初期化（デバイス名）
-    SerialBT.begin("M5STICK-C-TGSPET2");
+    SerialBT.begin("M5STICK-C-TGSPET1");
 
     // キュー作成
     xQueue = xQueueCreate(1, sizeof(int8_t));

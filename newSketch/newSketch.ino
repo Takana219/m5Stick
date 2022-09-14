@@ -46,6 +46,10 @@ void task(void *pvParameters)
     float yawOffset = 0;           // ヨーのオフセット
     float yawOld = 0;              // 前回のヨー
     float yaw2 = 0;                // 補正後のヨー
+
+    float before_pitch = 0.0f;
+    float before_roll = 0.0f;
+    float before_yaw = 0.0f;
     while (1)
     {
         int8_t data;
@@ -55,6 +59,10 @@ void task(void *pvParameters)
         float accX;
         float accY;
         float accZ;
+
+        
+
+        
         // タイマー割り込みがあるまで待機する
         xQueueReceive(xQueue, &data, portMAX_DELAY);
         M5.IMU.getAhrsData(&pitch, &roll, &yaw);
@@ -147,8 +155,17 @@ void task(void *pvParameters)
             Serial.printf(" %f,%f,%f\n", pitch, roll, yaw2);
             M5.Lcd.printf("%.2f  %.2f  %.2f\n", pitch, roll, yaw2);
             //シリアル通信
-            SerialBT.printf("x%.2f,y%.2f,z%.2f", pitch, roll, yaw2);
+
+            float difference_pitch = pitch - before_pitch;
+            float difference_roll = roll - before_roll ;
+            float difference_yaw = yaw2 - before_yaw ;
+            
+            SerialBT.printf("x%.2f,y%.2f,z%.2f", difference_pitch, difference_roll, difference_yaw);
             SerialBT.printf(",a%.2f,b%.2f,c%.2f", accX, accY, accZ);
+
+            before_pitch = pitch;
+            before_roll = roll;
+            before_yaw = yaw2;
 
             //光センサー(数字が小さいと明るい, 数字が大きいと暗い)
             uint16_t analogRead_value = analogRead(33);
@@ -174,9 +191,9 @@ void setup()
     M5.IMU.Init();
     M5.Lcd.setRotation(3); //モニタ画面方向設定
     M5.MPU6886.Init();     //センサ初期化
-    Serial.begin(9600);  //シリアル通信初期化
-    //Serial.begin(115200); //シリアル通信初期化
-    //Serial.begin(4800);
+//    Serial.begin(9600);  //シリアル通信初期化
+//    Serial.begin(115200); //シリアル通信初期化
+    //Serial.begin(20000);
     pinMode(32, INPUT);   //光センサーの読み取り
     pinMode(10, OUTPUT);  // LED
 
